@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "room-air-quality"
+version = "0.1.0"
+description = "Lightweight Python FastAPI server for ingesting air quality/status sensor data"
+authors = ["Nick Hoffmann <nhoffmann117@gmail.com>"]
+readme = "README.md"
+packages = [{include = "room_air_quality", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.1"
+pydantic = "^2.3.0"
+pydantic-settings = "^2.0.3"
+uvicorn = "^0.23.2"
+pint = "^0.22"
+influxdb-client = "^1.40.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
