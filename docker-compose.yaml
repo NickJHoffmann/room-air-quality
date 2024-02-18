@@ -1,24 +1,28 @@
 services:
   dev-server:
-    image: air-quality-server-dev:latest
-    container_name: air-quality-server
+    profiles:
+      - dev
+    image: raq-dev:latest
+    container_name: raq-dev
     volumes:
       - ".:/workdir"
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
-      - "influxdb"
+      - influxdb
     command: >
-      uvicorn src.room_air_quality.main:app
+      uvicorn src.raq.server.main:app
         --reload
         --log-level=debug
         --host 0.0.0.0
 
   grafana:
+    profiles:
+      - dev
     image: grafana/grafana-enterprise
     container_name: grafana
     ports:
-     - '3000:3000'
+     - 3000:3000
     volumes:
     - grafana-storage:/var/lib/grafana
     environment:
@@ -27,34 +31,30 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
 
-
   influxdb:
+    profiles:
+      - dev
     image: influxdb:latest
     container_name: influxdb2
     volumes:
       - ./influxdb/data:/var/lib/influxdb2:rw
-#    env_file:
-#      - .env
-#    entrypoint: ["./entrypoint.sh"]
     ports:
       - 8086:8086
     restart: unless-stopped
 
-#   telegraf:
-#     image: telegraf:latest
-#     container_name: telegraf
-# #    links:
-# #      - influxdb
-#     volumes:
-#       #  Sync timezone with host
-#       - /etc/localtime:/etc/localtime:ro
-#       #  Map Telegraf configuration file
-#       - ./influxdb/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-#       #  Map /tmp to permanent storage  (this includes /tmp/metrics.out)
-#       - ./influxdb:/tmp:rw
-#     restart: unless-stopped
-#     depends_on:
-#       - influxdb
+  server:
+    profiles:
+      - prod
+    image: raq-server:latest
+    container_name: raq-dev
+    networks:
+      - host
+    command: >
+      uvicorn src.raq.server.main:app
+        --log-level=info
+        --host 0.0.0.0
+    env_file:
+      - server.env
 
 volumes:
   grafana-storage: {}

@@ -4,17 +4,28 @@ version = "0.1.0"
 description = "Lightweight Python FastAPI server for ingesting air quality/status sensor data"
 authors = ["Nick Hoffmann <nhoffmann117@gmail.com>"]
 readme = "README.md"
-packages = [{include = "room_air_quality", from = "src"}]
+packages = [{include = "raq", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.103.1"
+python = ">=3.9,<4.0"
 pydantic = "^2.3.0"
 pydantic-settings = "^2.0.3"
+
+[tool.poetry.group.client]
+optional = true
+
+[tool.poetry.group.client.dependencies]
+# bme68x = ">=1.0.4"    # Fails to build
+httpx = "^0.26.0"
+
+[tool.poetry.group.server]
+optional = true
+
+[tool.poetry.group.server.dependencies]
+fastapi = "^0.103.1"
 uvicorn = "^0.23.2"
 pint = "^0.22"
-influxdb-client = "^1.40.0"
-
+influxdb-client = ">=1.40.0"
 
 [build-system]
 requires = ["poetry-core"]

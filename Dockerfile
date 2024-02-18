@@ -16,7 +16,16 @@ COPY poetry.lock pyproject.toml .
 FROM build-base AS build-dev
 COPY . .
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction 
+    && poetry install --all-extras --with client,server --no-interaction
 
 FROM build-dev AS dev
-CMD ["uvicorn", "src.room_air_quality.main:app", "--reload"]
+CMD ["uvicorn", "src.raq.server.main:app", "--reload"]
+
+
+FROM build-base AS build-server
+COPY . .
+RUN poetry config virtualenvs.create false \
+    && poetry install --with server --no-interaction
+
+FROM build-server AS server
+CMD ["uvicorn", "src.raq.server.main:app", "--host 0.0.0.0"]

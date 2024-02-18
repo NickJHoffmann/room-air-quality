@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Depends, Response
 from pint import UnitRegistry
-from room_air_quality.models import RoomAirQuality, FloatValue
+from raq.server.models import RoomAirQuality, FloatValue
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-from room_air_quality.config import ServerSettings
+from raq.server.config import ServerSettings
 from typing import Annotated
 from http import HTTPStatus
+import logging
 
 async def db_client():
     s = ServerSettings()
@@ -24,12 +25,12 @@ async def root():
 DESIRED_UNITS = {
     "temperature": "degF",
     "humidity": "percent",
-    "iaq": "ppm",
+    "iaq": "dimensionless",
     "pressure": "hPa",
 }
 
 def convert_to_desired_units(point: Point, raw_measurement: FloatValue, type: str) -> Point:
-    meas = ureg.Quantity(raw_measurement, raw_measurement.unit)
+    meas = ureg.Quantity(raw_measurement.value, raw_measurement.unit)
     desired_unit = DESIRED_UNITS[type]
     converted_magnitude = meas.to(desired_unit).magnitude
     return point.field(type, converted_magnitude)
@@ -54,5 +55,7 @@ async def room_air_quality(room_id: str, room_air_quality: RoomAirQuality, db_cl
 
     write_api = db_client.write_api(write_options=SYNCHRONOUS)
     write_api.write(bucket=s.influxdb_bucket, org=s.influxdb_org, record=point)
+
+    logging.info(f"Received room air quality data for room {room_id}: {room_air_quality}")
 
     return Response(status_code=HTTPStatus.CREATED)

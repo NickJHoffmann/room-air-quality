@@ -3,7 +3,7 @@ from pydantic import SecretStr
 
 class ServerSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="server.env",
         case_sensitive=False,
     )
 
