@@ -3,7 +3,7 @@ services:
     profiles:
       - dev
     image: raq-dev:latest
-    container_name: raq-dev
+    container_name: raq-dev-server
     volumes:
       - ".:/workdir"
     ports:
@@ -46,9 +46,8 @@ services:
     profiles:
       - prod
     image: raq-server:latest
-    container_name: raq-dev
-    networks:
-      - host
+    container_name: raq-server
+    network_mode: host
     command: >
       uvicorn src.raq.server.main:app
         --log-level=info

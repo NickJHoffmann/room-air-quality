@@ -5,7 +5,7 @@ RUN=docker run \
 	--name $(IMAGE_NAME)-dev \
 	-v $(PWD):/workdir \
 	--network host \
-	-it $(IMAGE_NAME)-dev:latest
+	$(IMAGE_NAME)-dev:latest
 
 build-dev:
 	docker build -t $(IMAGE_NAME)-dev:latest --target dev .
@@ -19,11 +19,17 @@ start:
 stop:
 	@docker-compose --profile dev down
 
-make start-prod:
+start-prod:
 	@docker-compose --profile prod up -d
 
-make stop-prod:
+stop-prod:
 	@docker-compose --profile prod down
 
-sh:
-	@$(RUN) sh
+bash:
+	@$(RUN) bash
+
+lint:
+	@$(RUN) ./bin/lint.sh
+
+format:
+	@$(RUN) ./bin/format.sh

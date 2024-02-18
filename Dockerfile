@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11-alpine AS base
+FROM python:3.11-slim AS base
 WORKDIR /workdir
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
